@@ -23,6 +23,11 @@ const invalidLogin = {
   password: '',
 }
 
+const unauthorizedUser = {
+  email: 'myemail@email.com',
+  password: 'mypassword'
+}
+
 const user = {
   id: 1,
   username: 'Admin',
@@ -76,7 +81,7 @@ describe('Login tests', () => {
 
       it('should return an unauthorized status', async () => {
         const response = await chai.request(app)
-          .post('/login').send(invalidLogin);
+          .post('/login').send(unauthorizedUser);
 
         expect(response.status).to.be.equal(401)
       });
@@ -84,7 +89,7 @@ describe('Login tests', () => {
       it('should return an object with a message', async () => {
         const message = 'Incorrect email or password'
         const response = await chai.request(app)
-          .post('/login').send(invalidLogin);
+          .post('/login').send(unauthorizedUser);
 
         expect(response.body).to.have.property('message')
         expect(response.body.message).to.equal(message)

@@ -3,6 +3,8 @@ import * as express from 'express';
 import { errorHandler } from './middlewares';
 import loginRouter from './routers';
 
+require('express-async-errors');
+
 class App {
   public app: express.Express;
 
