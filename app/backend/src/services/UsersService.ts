@@ -7,6 +7,7 @@ export default class UsersService {
     const { email } = login;
 
     const user = await Users.findOne({ where: { email } });
+    console.log(user);
 
     if (!user) {
       return null;

@@ -79,6 +79,14 @@ describe('Login tests', () => {
 
     describe('if an invalid email is provided', () => {
 
+      beforeEach(() => {
+        sinon.stub(Users, 'findOne').resolves(user as Users);
+      })
+  
+      afterEach(() => {
+        sinon.restore();
+      });
+
       it('should return an unauthorized status', async () => {
         const response = await chai.request(app)
           .post('/login').send(unauthorizedUser);
@@ -94,7 +102,34 @@ describe('Login tests', () => {
         expect(response.body).to.have.property('message')
         expect(response.body.message).to.equal(message)
       });
-  })
+    })
+
+    describe('if an invalid password is provided', () => {
+
+      beforeEach(() => {
+        sinon.stub(Users, 'findOne').resolves(user as Users);
+      })
+  
+      afterEach(() => {
+        sinon.restore();
+      });
+
+      it('should return an unauthorized status', async () => {
+        const response = await chai.request(app)
+          .post('/login').send(unauthorizedUser);
+
+        expect(response.status).to.be.equal(401)
+      });
+
+      it('should return an object with a message', async () => {
+        const message = 'Incorrect email or password'
+        const response = await chai.request(app)
+          .post('/login').send(unauthorizedUser);
+
+        expect(response.body).to.have.property('message')
+        expect(response.body.message).to.equal(message)
+      });
+    })
   
     describe('Case the user inputs valid data', () => {
 
