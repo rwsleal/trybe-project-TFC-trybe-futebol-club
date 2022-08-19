@@ -1,4 +1,4 @@
-import { createJWT, checkPassword } from '../helpers';
+import { bcryptHelper, jwtHelper } from '../helpers';
 import { ILogin } from '../interfaces';
 import Users from '../database/models/Users';
 
@@ -15,9 +15,9 @@ export default class UsersService {
 
     const { id, username, password } = user;
 
-    checkPassword(login.password, password);
+    bcryptHelper.checkPassword(login.password, password);
 
-    const token = createJWT({ id, username });
+    const token = jwtHelper.createToken({ id, username });
 
     return token;
   };

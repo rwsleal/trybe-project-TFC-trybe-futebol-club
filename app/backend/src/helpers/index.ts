@@ -1,4 +1,4 @@
-import createJWT from './jwtGenerator';
-import checkPassword from './bcrypt';
+import bcryptHelper from './bcryptHelper';
+import jwtHelper from './jwtHelper';
 
-export { createJWT, checkPassword };
+export { jwtHelper, bcryptHelper };
