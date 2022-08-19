@@ -71,24 +71,43 @@ describe('Login tests', () => {
         expect(response.body.message).to.equal(message)
       });
     })
+
+    describe('if an invalid email is provided', () => {
+
+      it('should return an unauthorized status', async () => {
+        const response = await chai.request(app)
+          .post('/login').send(invalidLogin);
+
+        expect(response.status).to.be.equal(401)
+      });
+
+      it('should return an object with a message', async () => {
+        const message = 'Incorrect email or password'
+        const response = await chai.request(app)
+          .post('/login').send(invalidLogin);
+
+        expect(response.body).to.have.property('message')
+        expect(response.body.message).to.equal(message)
+      });
   })
   
-  describe('Case the user inputs valid data', () => {
+    describe('Case the user inputs valid data', () => {
 
-    beforeEach(() => {
-      sinon.stub(Users, 'findOne').resolves(user as Users);
-    })
+      beforeEach(() => {
+        sinon.stub(Users, 'findOne').resolves(user as Users);
+      })
   
-    afterEach(() => {
-      sinon.restore();
-    });
+      afterEach(() => {
+        sinon.restore();
+      });
   
-    it('should return status 200 with a token', async () => {
-      const response = await chai.request(app)
-        .post('/login').send(validLogin);
+      it('should return status 200 with a token', async () => {
+        const response = await chai.request(app)
+          .post('/login').send(validLogin);
       
-      expect(response.status).to.be.equal(200);
-      expect(response.body).to.have.property('token');
+        expect(response.status).to.be.equal(200);
+        expect(response.body).to.have.property('token');
+      });
     });
-  });
-});
+  })
+})
