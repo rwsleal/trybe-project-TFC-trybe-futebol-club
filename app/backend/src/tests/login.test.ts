@@ -53,8 +53,23 @@ describe('Login tests', () => {
       });
     })
 
-    describe('if an email is not provided', () => {
+    describe('if a password is not provided', () => {
 
+      it('should return a bad request status', async () => {
+        const response = await chai.request(app)
+          .post('/login').send(invalidLogin);
+
+        expect(response.status).to.be.equal(400)
+      });
+
+      it('should return an object with a message', async () => {
+        const message = 'All fields must be filled'
+        const response = await chai.request(app)
+          .post('/login').send(invalidLogin);
+
+        expect(response.body).to.have.property('message')
+        expect(response.body.message).to.equal(message)
+      });
     })
   })
   
