@@ -36,6 +36,10 @@ const user = {
   password: '$2a$08$xi.Hxk1czAO0nZR..B393u10aED0RQ1N3PAEXQ7HxtLjKPEZBu.PW',
 }
 
+const validToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+  + ".eyJkYXRhIjp7ImlkIjoxLCJ1c2VybmFtZSI6IkFkbWluIn0sImlhdCI6MTY2MDk1MTkzOSwiZXhwIjoxNjYxNTU2NzM5fQ"
+  + ".XNXm9La8X42nd3Ij8ycJhVHEwwgnZMuxDCo99EQ4FP4"
+
 describe('Login tests', () => {
   describe('Case the user inputs invalid data', () => {
 
@@ -130,24 +134,52 @@ describe('Login tests', () => {
         expect(response.body.message).to.equal(message)
       });
     })
+  })
+
+  describe('Case the user inputs valid data', () => {
+
+    beforeEach(() => {
+      sinon.stub(Users, 'findOne').resolves(user as Users);
+    })
   
-    describe('Case the user inputs valid data', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+  
+    it('should return status 200 with a token', async () => {
+      const response = await chai.request(app)
+        .post('/login').send(validLogin);
+      
+      expect(response.status).to.be.equal(200);
+      expect(response.body).to.have.property('token');
+    });
+  });
+
+  describe('Case a token validation is needed', () => {
+    describe('if a valid token is provided', () => {
 
       beforeEach(() => {
         sinon.stub(Users, 'findOne').resolves(user as Users);
       })
-  
+
       afterEach(() => {
         sinon.restore();
-      });
-  
-      it('should return status 200 with a token', async () => {
+      })
+
+      it ('should return status 200', async () => {
         const response = await chai.request(app)
-          .post('/login').send(validLogin);
-      
+          .get('/login/validate').set('authorization', validToken);
+
         expect(response.status).to.be.equal(200);
-        expect(response.body).to.have.property('token');
-      });
-    });
+      })
+
+      it ('should return the user role inside an object', async () => {
+        const response = await chai.request(app)
+        .get('/login/validate').set('authorization', validToken);
+
+        expect(response.body).to.be.an('object');
+        expect(response.body).to.have.property('role');
+      })
+    })
   })
 })
