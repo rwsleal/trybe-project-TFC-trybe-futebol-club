@@ -1,5 +1,5 @@
 import errorHandler from './errorHandlerMiddleware';
-import validationMiddleware from './validationMiddleware';
+import ValidationMiddleware from './ValidationMiddleware';
 import TokenHandler from './TokenHandlerMiddleware';
 
-export { errorHandler, validationMiddleware, TokenHandler };
+export { errorHandler, ValidationMiddleware, TokenHandler };

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { validationMiddleware } from '../middlewares';
+import { ValidationMiddleware } from '../middlewares';
 import loginSchema from '../Schemas/loginSchema';
 import UsersService from '../services';
 import UsersController from '../controllers';
@@ -12,7 +12,7 @@ const usersController = new UsersController(usersService);
 
 loginRouter.post(
   '/',
-  validationMiddleware(loginSchema),
+  ValidationMiddleware.checkJoiSchema(loginSchema),
   usersController.getByLogin,
 );
 
