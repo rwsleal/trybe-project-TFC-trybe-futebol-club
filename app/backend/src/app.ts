@@ -1,6 +1,6 @@
 import cors = require('cors');
 import * as express from 'express';
-import { errorHandler } from './middlewares';
+import { ErrorHandler } from './middlewares';
 import loginRouter from './routers';
 
 require('express-async-errors');
@@ -32,7 +32,7 @@ class App {
 
     this.app.use('/login', loginRouter);
 
-    this.app.use(errorHandler);
+    this.app.use(ErrorHandler.Response);
   }
 
   public start(PORT: string | number):void {
