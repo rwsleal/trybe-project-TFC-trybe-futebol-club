@@ -4,6 +4,10 @@ import 'dotenv/config';
 
 const SECRET = process.env.JWT || 'jwt_secret';
 
+type Data = {
+  data: IPayload
+};
+
 export default class jwtHelper {
   static createToken(payload: IPayload): string {
     const jwtConfig:jwt.SignOptions = { expiresIn: '7d', algorithm: 'HS256' };
@@ -13,9 +17,10 @@ export default class jwtHelper {
 
   static checkToken(token: string) {
     try {
-      const payload = jwt.verify(token, SECRET);
+      const decoded = jwt.verify(token, SECRET);
+      const { data } = decoded as Data;
 
-      return payload;
+      return data;
     } catch (err) {
       throw new Error('Token must be a valid token');
     }

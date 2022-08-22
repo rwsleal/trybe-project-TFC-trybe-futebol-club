@@ -20,4 +20,21 @@ export default class UsersService {
 
     return token;
   };
+
+  getRoleByToken = async (token: string): Promise<string | null> => {
+    const { id } = jwtHelper.checkToken(token);
+
+    const user = await Users.findByPk(
+      id,
+      { attributes: { exclude: ['password'] } },
+    );
+
+    if (!user) {
+      return null;
+    }
+
+    const { role } = user;
+
+    return role;
+  };
 }

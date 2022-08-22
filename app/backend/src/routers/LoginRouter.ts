@@ -3,6 +3,7 @@ import { validationMiddleware } from '../middlewares';
 import loginSchema from '../Schemas/loginSchema';
 import UsersService from '../services';
 import UsersController from '../controllers';
+import TokenHandler from '../middlewares/TokenHandlerMiddleware';
 
 const loginRouter = Router();
 
@@ -13,6 +14,12 @@ loginRouter.post(
   '/',
   validationMiddleware(loginSchema),
   usersController.getByLogin,
+);
+
+loginRouter.get(
+  '/validate',
+  TokenHandler.checkToken,
+  usersController.getRoleByToken,
 );
 
 export default loginRouter;
