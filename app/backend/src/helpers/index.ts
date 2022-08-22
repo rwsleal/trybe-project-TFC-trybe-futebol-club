@@ -1,4 +1,4 @@
-import bcryptHelper from './bcryptHelper';
-import jwtHelper from './jwtHelper';
+import BcryptHelper from './BcryptHelper';
+import JWTHelper from './JWTHelper';
 
-export { jwtHelper, bcryptHelper };
+export { JWTHelper, BcryptHelper };

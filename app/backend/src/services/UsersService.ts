@@ -1,4 +1,4 @@
-import { bcryptHelper, jwtHelper } from '../helpers';
+import { BcryptHelper, JWTHelper } from '../helpers';
 import { ILogin } from '../interfaces';
 import Users from '../database/models/Users';
 
@@ -14,15 +14,15 @@ export default class UsersService {
 
     const { id, username, password } = user;
 
-    bcryptHelper.checkPassword(login.password, password);
+    BcryptHelper.checkPassword(login.password, password);
 
-    const token = jwtHelper.createToken({ id, username });
+    const token = JWTHelper.createToken({ id, username });
 
     return token;
   };
 
   getRoleByToken = async (token: string): Promise<string | null> => {
-    const { id } = jwtHelper.checkToken(token);
+    const { id } = JWTHelper.checkToken(token);
 
     const user = await Users.findByPk(
       id,

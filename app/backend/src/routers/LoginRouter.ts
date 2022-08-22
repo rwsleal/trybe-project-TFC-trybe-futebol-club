@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { ValidationHandler } from '../middlewares';
 import loginSchema from '../Schemas/loginSchema';
-import UsersService from '../services';
-import UsersController from '../controllers';
+import { UsersService } from '../services';
+import { UsersController } from '../controllers';
 import TokenHandler from '../middlewares/TokenHandlerMiddleware';
 
 const loginRouter = Router();

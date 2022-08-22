@@ -8,7 +8,7 @@ type Data = {
   data: IPayload
 };
 
-export default class jwtHelper {
+export default class JWTHelper {
   static createToken(payload: IPayload): string {
     const jwtConfig:jwt.SignOptions = { expiresIn: '7d', algorithm: 'HS256' };
 

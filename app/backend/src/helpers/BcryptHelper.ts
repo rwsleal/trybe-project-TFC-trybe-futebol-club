@@ -2,7 +2,7 @@ import * as bcrypt from 'bcryptjs';
 
 require('express-async-errors');
 
-export default class bcryptHelper {
+export default class BcryptHelper {
   static checkPassword(inputPassword:string, passwordHash:string) {
     const check = bcrypt.compareSync(inputPassword, passwordHash);
 
