@@ -50,7 +50,7 @@ describe('Teams tests', () => {
       const response = await chai.request(app)
         .get('/teams')
 
-      expect(response.body).to.be.equal(teams);
+      expect(response.body).deep.equal(teams);
     });
   })
 })
