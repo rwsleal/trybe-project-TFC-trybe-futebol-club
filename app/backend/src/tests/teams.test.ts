@@ -29,7 +29,7 @@ const teams = [
 ]
 
 describe('Teams tests', () => {
-  describe('Case a GET request is made', () => {
+  describe('Case a GET request is made to /teams', () => {
 
     beforeEach(() => {
       sinon.stub(Teams, 'findAll').resolves(teams as Teams[]);
@@ -51,6 +51,31 @@ describe('Teams tests', () => {
         .get('/teams')
 
       expect(response.body).deep.equal(teams);
+    });
+  })
+
+  describe('Case a GET request is made to /teams/:id', () => {
+
+    beforeEach(() => {
+      sinon.stub(Teams, 'findOne').resolves(teams[0] as Teams);
+    })
+  
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return status 200', async () => {
+      const response = await chai.request(app)
+        .get('/teams/1')
+
+      expect(response.status).to.be.equal(200);
+    });
+
+    it('should return an array with all the teams', async () => {
+      const response = await chai.request(app)
+        .get('/teams/1')
+
+      expect(response.body).deep.equal(teams[0]);
     });
   })
 })
