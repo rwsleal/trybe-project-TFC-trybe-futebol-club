@@ -82,6 +82,11 @@ const otherTeams = {
   "awayTeamGoals": 2
 }
 
+const matchUpdate = {
+  "homeTeamGoals": 7,
+  "awayTeamGoals": 1
+}
+
 const validToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
   + ".eyJkYXRhIjp7ImlkIjoxLCJ1c2VybmFtZSI6IkFkbWluIn0sImlhdCI6MTY2MDk1MTkzOSwiZXhwIjoxNjYxNTU2NzM5fQ"
   + ".XNXm9La8X42nd3Ij8ycJhVHEwwgnZMuxDCo99EQ4FP4"
@@ -221,7 +226,7 @@ describe('Matches tests', () => {
     }); 
   })
 
-  describe('Case a POST request is made to /matches/:id/finish"', () => {
+  describe('Case a PATCH request is made to /matches/:id/finish"', () => {
 
     beforeEach(() => {
       sinon.stub(Matches, 'update').resolves()
@@ -244,6 +249,32 @@ describe('Matches tests', () => {
 
       expect(response.body).to.haveOwnProperty('message')
       expect(response.body.message).to.be.deep.equal('Finished')
+    }); 
+  })
+
+  describe('Case a PATCH request is made to /matches/:id"', () => {
+
+    beforeEach(() => {
+      sinon.stub(Matches, 'update').resolves()
+    })
+  
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return status 200', async () => {
+      const response = await chai.request(app)
+        .patch('/matches/2').send(matchUpdate)
+
+      expect(response.status).to.be.equal(200)
+    });
+    
+    it('should return a message', async () => {
+      const response = await chai.request(app)
+        .patch('/matches/2/').send(matchUpdate)
+
+      expect(response.body).to.haveOwnProperty('message')
+      expect(response.body.message).to.be.deep.equal('Match updated')
     }); 
   })
 })

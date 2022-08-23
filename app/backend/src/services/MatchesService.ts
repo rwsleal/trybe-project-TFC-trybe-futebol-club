@@ -1,4 +1,4 @@
-import { IMatch } from '../interfaces';
+import { IMatch, IMatchUpdate } from '../interfaces';
 import Matches from '../database/models/Matches';
 import Teams from '../database/models/Teams';
 
@@ -53,6 +53,15 @@ export default class MatchesServices {
   finishAnOnGoingMatch = async (id: string): Promise<void> => {
     await Matches.update(
       { inProgress: false },
+      { where: { id } },
+    );
+  };
+
+  updateAnOnGoingMatch = async (id: string, matchUpdate: IMatchUpdate): Promise<void> => {
+    const { homeTeamGoals, awayTeamGoals } = matchUpdate;
+
+    await Matches.update(
+      { homeTeamGoals, awayTeamGoals },
       { where: { id } },
     );
   };
