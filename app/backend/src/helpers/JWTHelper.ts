@@ -17,12 +17,16 @@ export default class JWTHelper {
 
   static checkToken(token: string) {
     try {
-      const decoded = jwt.verify(token, SECRET);
-      const { data } = decoded as Data;
-
-      return data;
+      jwt.verify(token, SECRET);
     } catch (err) {
       throw new Error('Token must be a valid token');
     }
+  }
+
+  static getTokenData(token: string) {
+    const decoded = jwt.decode(token);
+    const { data } = decoded as Data;
+
+    return data;
   }
 }

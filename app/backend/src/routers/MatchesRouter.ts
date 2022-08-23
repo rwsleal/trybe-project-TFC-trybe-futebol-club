@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { TokenHandler } from '../middlewares';
 import { MatchesController } from '../controllers';
 import { MatchesService } from '../services';
 
@@ -10,6 +11,12 @@ const matchesController = new MatchesController(matchesService);
 matchesRouter.get(
   '/',
   matchesController.getAll,
+);
+
+matchesRouter.post(
+  '/',
+  TokenHandler.checkToken,
+  matchesController.createAnOnGoingMatch,
 );
 
 export default matchesRouter;

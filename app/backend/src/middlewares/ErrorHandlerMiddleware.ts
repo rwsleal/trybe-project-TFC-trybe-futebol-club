@@ -6,6 +6,10 @@ export default class ErrorHandler {
       return res.status(401).json({ message: err.message });
     }
 
+    if (err.message.includes('token')) {
+      return res.status(401).json({ message: err.message });
+    }
+
     console.log(err);
 
     return res.status(500).json({ message: 'Internal server error' });

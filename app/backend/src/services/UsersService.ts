@@ -22,7 +22,7 @@ export default class UsersService {
   };
 
   getRoleByToken = async (token: string): Promise<string | null> => {
-    const { id } = JWTHelper.checkToken(token);
+    const { id } = JWTHelper.getTokenData(token);
 
     const user = await Users.findByPk(
       id,
