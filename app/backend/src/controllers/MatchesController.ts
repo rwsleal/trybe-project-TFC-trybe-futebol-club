@@ -23,11 +23,6 @@ export default class MatchesController {
   createAnOnGoingMatch = async (req: Request, res: Response) => {
     const result = await this.matchesService.createAnOnGoingMatch(req.body);
 
-    if (!result) {
-      return res.status(401)
-        .json({ message: 'It is not possible to create a match with two equal teams' });
-    }
-
     return res.status(201).json(result);
   };
 

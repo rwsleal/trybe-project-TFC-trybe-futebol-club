@@ -75,6 +75,13 @@ const sameTeams = {
   "awayTeamGoals": 2
 }
 
+const otherTeams = {
+  "homeTeam": 55, 
+  "awayTeam": 65, 
+  "homeTeamGoals": 2,
+  "awayTeamGoals": 2
+}
+
 const validToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
   + ".eyJkYXRhIjp7ImlkIjoxLCJ1c2VybmFtZSI6IkFkbWluIn0sImlhdCI6MTY2MDk1MTkzOSwiZXhwIjoxNjYxNTU2NzM5fQ"
   + ".XNXm9La8X42nd3Ij8ycJhVHEwwgnZMuxDCo99EQ4FP4"
@@ -187,6 +194,14 @@ describe('Matches tests', () => {
 
       expect(response.status).to.be.equal(401);
       expect(response.body).to.be.deep.equal({ message: 'It is not possible to create a match with two equal teams' });
+    });
+    
+    it('should not be able to create with teams that are not on the database', async () => {
+      const response = await chai.request(app)
+        .post('/matches').send(otherTeams).set('authorization', validToken)
+
+      expect(response.status).to.be.equal(404);
+      expect(response.body).to.be.deep.equal({ message: 'There is no team with such id!' });
     }); 
 
     it('should not be able to create with an invalid token', async () => {

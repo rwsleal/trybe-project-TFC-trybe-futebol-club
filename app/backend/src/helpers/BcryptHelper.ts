@@ -7,7 +7,7 @@ export default class BcryptHelper {
     const check = bcrypt.compareSync(inputPassword, passwordHash);
 
     if (!check) {
-      throw new Error('Incorrect email or password');
+      throw new Error('401|Incorrect email or password');
     }
   }
 }

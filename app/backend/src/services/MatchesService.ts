@@ -26,11 +26,20 @@ export default class MatchesServices {
     return matches as IMatch[];
   };
 
-  createAnOnGoingMatch = async (newMatchRequest: IMatch): Promise<IMatch | null> => {
+  createAnOnGoingMatch = async (newMatchRequest: IMatch): Promise<IMatch> => {
     const { homeTeam, awayTeam } = newMatchRequest;
 
     if (homeTeam === awayTeam) {
-      return null;
+      throw new Error('401|It is not possible to create a match with two equal teams');
+    }
+
+    const allTeams = await Teams.findAll({ attributes: { exclude: ['teamName'] } });
+
+    const checkHomeTeam = allTeams.find(({ id }) => id === homeTeam);
+    const checkAwayTeam = allTeams.find(({ id }) => id === awayTeam);
+
+    if (!checkHomeTeam || !checkAwayTeam) {
+      throw new Error('404|There is no team with such id!');
     }
 
     const newMatche = await Matches.create({

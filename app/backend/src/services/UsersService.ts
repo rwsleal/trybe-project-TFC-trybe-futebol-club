@@ -9,7 +9,7 @@ export default class UsersService {
     const user = await Users.findOne({ where: { email } });
 
     if (!user) {
-      return null;
+      throw new Error('401|Incorrect email or password');
     }
 
     const { id, username, password } = user;
@@ -30,7 +30,7 @@ export default class UsersService {
     );
 
     if (!user) {
-      return null;
+      throw new Error('400|Role not found');
     }
 
     const { role } = user;

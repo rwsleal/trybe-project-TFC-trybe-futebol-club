@@ -19,7 +19,7 @@ export default class JWTHelper {
     try {
       jwt.verify(token, SECRET);
     } catch (err) {
-      throw new Error('Token must be a valid token');
+      throw new Error('401|Token must be a valid token');
     }
   }
 
