@@ -1,7 +1,7 @@
 import cors = require('cors');
 import * as express from 'express';
 import { ErrorHandler } from './middlewares';
-import { loginRouter, teamsRouter } from './routers';
+import { loginRouter, matchesRouter, teamsRouter } from './routers';
 
 require('express-async-errors');
 
@@ -33,6 +33,8 @@ class App {
     this.app.use('/login', loginRouter);
 
     this.app.use('/teams', teamsRouter);
+
+    this.app.use('/matches', matchesRouter);
 
     this.app.use(ErrorHandler.Response);
   }
