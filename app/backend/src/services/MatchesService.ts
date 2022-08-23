@@ -26,7 +26,13 @@ export default class MatchesServices {
     return matches as IMatch[];
   };
 
-  createAnOnGoingMatch = async (newMatchRequest: IMatch): Promise<IMatch> => {
+  createAnOnGoingMatch = async (newMatchRequest: IMatch): Promise<IMatch | null> => {
+    const { homeTeam, awayTeam } = newMatchRequest;
+
+    if (homeTeam === awayTeam) {
+      return null;
+    }
+
     const newMatche = await Matches.create({
       ...newMatchRequest,
       inProgress: true,
