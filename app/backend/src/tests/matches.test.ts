@@ -190,4 +190,30 @@ describe('Matches tests', () => {
       expect(response.body).to.be.deep.equal({ message: 'Token not provided' });
     }); 
   })
+
+  describe('Case a POST request is made to /matches/:id/finish"', () => {
+
+    beforeEach(() => {
+      sinon.stub(Matches, 'update').resolves()
+    })
+  
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return status 200', async () => {
+      const response = await chai.request(app)
+        .patch('/matches/2/finish')
+
+      expect(response.status).to.be.equal(200)
+    });
+    
+    it('should return a message', async () => {
+      const response = await chai.request(app)
+        .patch('/matches/2/finish')
+
+      expect(response.body).to.haveOwnProperty('message')
+      expect(response.body.message).to.be.deep.equal('Finished')
+    }); 
+  })
 })

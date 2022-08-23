@@ -34,4 +34,11 @@ export default class MatchesServices {
 
     return newMatche;
   };
+
+  finishAnOnGoingMatch = async (id: string): Promise<void> => {
+    await Matches.update(
+      { inProgress: false },
+      { where: { id } },
+    );
+  };
 }
