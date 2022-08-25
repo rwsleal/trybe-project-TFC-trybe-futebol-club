@@ -9,7 +9,12 @@ const matchesController = new LeaderboardsController(leaderboardsService);
 
 leaderboardsRouter.get(
   '/home',
-  matchesController.getAll,
+  matchesController.getHomeTeamsData,
+);
+
+leaderboardsRouter.get(
+  '/away',
+  matchesController.getAwayTeamsData,
 );
 
 export default leaderboardsRouter;

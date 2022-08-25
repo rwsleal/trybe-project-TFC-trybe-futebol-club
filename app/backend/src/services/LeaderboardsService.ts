@@ -4,33 +4,40 @@ import Matches from '../database/models/Matches';
 import { LeaderboardHelper } from '../helpers';
 
 export default class LeaderboardsService {
-  getAll = async (): Promise<ILeaderboard[]> => {
+  getHomeTeamsData = async (): Promise<ILeaderboard[]> => {
     const allTeams = await Teams.findAll();
-
-    // const matches = await Matches.findAll({
-    //   include: [
-    //     { model: Teams, as: 'teamHome', attributes: ['teamName'] },
-    //     { model: Teams, as: 'teamAway', attributes: ['teamName'] },
-    //   ],
-    // });
-
     const teamInfo = await Promise
       .all(allTeams.map(async ({ id, teamName }): Promise<ILeaderboard> => {
         const whenHomeTeam = await Matches.findAll({
           attributes: { exclude: ['id', 'homeTeam', 'awayTeam', 'inProgress'] },
           where: { homeTeam: id, inProgress: false },
         });
-        // const whenAwayTeam = await Matches.findAll({
-        //   attributes: { exclude: ['homeTeam', 'homeTeamGoals', 'inProgress'] },
-        //   where: { homeTeam: id },
-        // });
-        const teamStats = LeaderboardHelper.buildTeamStats(teamName, whenHomeTeam);
+        const teamStats = LeaderboardHelper.buildHomeTeamStats(teamName, whenHomeTeam);
 
         return teamStats;
       }));
 
-    const teamInfoSorted = await LeaderboardHelper.sortTeamStats(teamInfo);
+    const teamsInfoSorted = await LeaderboardHelper.sortTeamStats(teamInfo);
 
-    return teamInfoSorted;
+    return teamsInfoSorted;
+  };
+
+  getAwayTeamsData = async (): Promise<ILeaderboard[]> => {
+    const allTeams = await Teams.findAll();
+    const teamInfo = await Promise
+      .all(allTeams.map(async ({ id, teamName }): Promise<ILeaderboard> => {
+        const whenAwayTeam = await Matches.findAll({
+          attributes: { exclude: ['homeTeam', 'awayTeam', 'inProgress'] },
+          where: { awayTeam: id, inProgress: false },
+        });
+        console.log(whenAwayTeam);
+        const teamStats = LeaderboardHelper.buildAwayTeamStats(teamName, whenAwayTeam);
+
+        return teamStats;
+      }));
+
+    const teamsInfoSorted = LeaderboardHelper.sortTeamStats(teamInfo);
+
+    return teamsInfoSorted;
   };
 }
