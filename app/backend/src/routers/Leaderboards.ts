@@ -17,4 +17,9 @@ leaderboardsRouter.get(
   matchesController.getAwayTeamsData,
 );
 
+leaderboardsRouter.get(
+  '/',
+  matchesController.getTest,
+);
+
 export default leaderboardsRouter;

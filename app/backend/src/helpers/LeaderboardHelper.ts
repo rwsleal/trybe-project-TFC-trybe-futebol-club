@@ -1,4 +1,4 @@
-import { ILeaderboard, IMatchUpdate } from '../interfaces';
+import { ILeaderboard, IMatchUpdate, IMatchInfo } from '../interfaces';
 
 export default class LeaderboardHelper {
   static buildHomeTeamStats(name: string, teamInfo: IMatchUpdate[]): ILeaderboard {
@@ -93,5 +93,55 @@ export default class LeaderboardHelper {
     });
 
     return { totalVictories, totalLosses, totalDraws };
+  }
+
+  static buildTeamStats(name: string, teamInfo: IMatchInfo[]): ILeaderboard {
+    const totalVLDAndGoals = this.getVLDAndGoals(name, teamInfo);
+    const totalPoints = totalVLDAndGoals.totalVictories * 3 + totalVLDAndGoals.totalDraws;
+    const totalGames = teamInfo.length;
+
+    return {
+      name,
+      totalPoints,
+      totalGames,
+      totalVictories: totalVLDAndGoals.totalVictories,
+      totalDraws: totalVLDAndGoals.totalDraws,
+      totalLosses: totalVLDAndGoals.totalLosses,
+      goalsFavor: totalVLDAndGoals.goalsFavor,
+      goalsOwn: totalVLDAndGoals.goalsOwn,
+      goalsBalance: totalVLDAndGoals.goalsFavor - totalVLDAndGoals.goalsOwn,
+      efficiency: Number(((totalPoints / (totalGames * 3)) * 100).toFixed(2)),
+    };
+  }
+
+  static getVLDAndGoals(name: string, teamInfo: IMatchInfo[]) {
+    const whenHome = teamInfo.filter(({ teamHome }) => teamHome.teamName === name);
+    const whenHomeVLD = this.getHomeVLD(whenHome);
+    const whenAway = teamInfo.filter(({ teamAway }) => teamAway.teamName === name);
+    const whenAwayVLD = this.getAwayVLD(whenAway);
+    const allGoals = this.getAllGoals(whenHome, whenAway);
+
+    return {
+      totalVictories: whenHomeVLD.totalVictories + whenAwayVLD.totalVictories,
+      totalLosses: whenHomeVLD.totalLosses + whenAwayVLD.totalLosses,
+      totalDraws: whenHomeVLD.totalDraws + whenAwayVLD.totalDraws,
+      ...allGoals,
+    };
+  }
+
+  static getAllGoals(whenHome: IMatchInfo[], whenAway: IMatchInfo[]) {
+    const homeGoalsFavor = this.getGoals(whenHome.map((match) => match.homeTeamGoals));
+    const homeGoalsOwn = this.getGoals(whenHome.map((match) => match.awayTeamGoals));
+
+    const awayGoalsFavor = this.getGoals(whenAway.map((match) => match.awayTeamGoals));
+    const awayGoalsOwn = this.getGoals(whenAway.map((match) => match.homeTeamGoals));
+
+    const goalsFavor = homeGoalsFavor + awayGoalsFavor;
+    const goalsOwn = homeGoalsOwn + awayGoalsOwn;
+
+    return {
+      goalsFavor,
+      goalsOwn,
+    };
   }
 }

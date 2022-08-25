@@ -5,7 +5,12 @@ export interface IMatch extends Matches {
   teamAway?: { teamName: string };
 }
 
-export interface IMatchUpdate {
+export interface IMatchUpdate extends IMatch{
   homeTeamGoals: number,
   awayTeamGoals: number,
+}
+
+export interface IMatchInfo extends Matches {
+  teamHome: { teamName: string },
+  teamAway: { teamName: string },
 }

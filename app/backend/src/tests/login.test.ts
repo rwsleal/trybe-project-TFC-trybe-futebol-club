@@ -136,7 +136,7 @@ describe('Login tests', () => {
     })
   })
 
-  describe('Case the user inputs valid data', () => {
+  describe('Case the user inputs valid data and the login is found', () => {
 
     beforeEach(() => {
       sinon.stub(Users, 'findOne').resolves(user as Users);

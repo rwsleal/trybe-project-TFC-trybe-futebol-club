@@ -17,4 +17,10 @@ export default class LeaderboardsController {
 
     return res.status(200).json(result);
   };
+
+  getTest = async (req: Request, res: Response) => {
+    const result = await this.leaderboardsService.getGeneralTeamsData();
+
+    return res.status(200).json(result);
+  };
 }
