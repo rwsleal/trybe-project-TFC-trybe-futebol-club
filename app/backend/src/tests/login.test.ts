@@ -136,23 +136,43 @@ describe('Login tests', () => {
     })
   })
 
-  describe('Case the user inputs valid data and the login is found', () => {
-
-    beforeEach(() => {
-      sinon.stub(Users, 'findOne').resolves(user as Users);
+  describe('Case the user inputs valid data', () => {
+    describe('if the login is found', () => {
+      beforeEach(() => {
+        sinon.stub(Users, 'findOne').resolves(user as Users);
+      })
+    
+      afterEach(() => {
+        sinon.restore();
+      });
+    
+      it('should return status 200 with a token', async () => {
+        const response = await chai.request(app)
+          .post('/login').send(validLogin);
+        
+        expect(response.status).to.be.equal(200);
+        expect(response.body).to.have.property('token');
+      });
     })
-  
-    afterEach(() => {
-      sinon.restore();
-    });
-  
-    it('should return status 200 with a token', async () => {
-      const response = await chai.request(app)
-        .post('/login').send(validLogin);
-      
-      expect(response.status).to.be.equal(200);
-      expect(response.body).to.have.property('token');
-    });
+
+    describe('if the login is not found', () => {
+      beforeEach(() => {
+        sinon.stub(Users, 'findOne').resolves();
+      })
+    
+      afterEach(() => {
+        sinon.restore();
+      });
+    
+      it('should return status 401 with a message', async () => {
+        const response = await chai.request(app)
+          .post('/login').send(validLogin);
+        
+        expect(response.status).to.be.equal(401);
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.be.deep.equal('Incorrect email or password')
+      });
+    })
   });
 
   describe('Case a token validation is needed', () => {
@@ -179,6 +199,26 @@ describe('Login tests', () => {
 
         expect(response.body).to.be.an('object');
         expect(response.body).to.have.property('role');
+      })
+    })
+
+    describe('if a valid token is provided but the user is not found', () => {
+
+      beforeEach(() => {
+        sinon.stub(Users, 'findOne').resolves();
+      })
+
+      afterEach(() => {
+        sinon.restore();
+      })
+
+      it ('should return status 400 with a message', async () => {
+        const response = await chai.request(app)
+          .get('/login/validate').set('authorization', validToken);
+
+        expect(response.status).to.be.equal(400);
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.be.deep.equal('Role not found')
       })
     })
   })
