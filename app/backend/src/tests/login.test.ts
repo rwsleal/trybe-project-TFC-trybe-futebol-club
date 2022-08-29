@@ -37,8 +37,8 @@ const user = {
 }
 
 const validToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
-  + ".eyJkYXRhIjp7ImlkIjoxLCJ1c2VybmFtZSI6IkFkbWluIn0sImlhdCI6MTY2MDk1MTkzOSwiZXhwIjoxNjYxNTU2NzM5fQ"
-  + ".XNXm9La8X42nd3Ij8ycJhVHEwwgnZMuxDCo99EQ4FP4"
+  + ".eyJkYXRhIjp7ImlkIjoxLCJ1c2VybmFtZSI6IkFkbWluIn0sImlhdCI6MTY2MTc5MzA2MCwiZXhwIjoxNjYyMzk3ODYwfQ"
+  + ".WrOX3IaO5hj1ApxGKo6G25EbtJ-EFJBDK-5AUtocllM"
 
 describe('Login tests', () => {
   describe('Case the user inputs invalid data', () => {

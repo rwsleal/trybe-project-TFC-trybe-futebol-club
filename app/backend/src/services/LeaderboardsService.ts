@@ -10,6 +10,7 @@ export default class LeaderboardsService {
     const teamInfo = await Promise
       .all(allTeams.map(async ({ id, teamName }): Promise<ILeaderboard> => {
         const whenHomeTeam = await Matches.findAll({
+          raw: true,
           attributes: { exclude: ['id', 'homeTeam', 'awayTeam', 'inProgress'] },
           where: { homeTeam: id, inProgress: false },
         });
