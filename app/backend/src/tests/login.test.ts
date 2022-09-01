@@ -8,6 +8,8 @@ import Example from '../database/models/ExampleModel';
 
 import { Response } from 'superagent';
 import Users from '../database/models/Users';
+import { TokenHandler } from '../middlewares';
+import { JWTHelper } from '../helpers';
 
 chai.use(chaiHttp);
 
@@ -36,9 +38,8 @@ const user = {
   password: '$2a$08$xi.Hxk1czAO0nZR..B393u10aED0RQ1N3PAEXQ7HxtLjKPEZBu.PW',
 }
 
-const validToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
-  + ".eyJkYXRhIjp7ImlkIjoxLCJ1c2VybmFtZSI6IkFkbWluIn0sImlhdCI6MTY2MTc5MzA2MCwiZXhwIjoxNjYyMzk3ODYwfQ"
-  + ".WrOX3IaO5hj1ApxGKo6G25EbtJ-EFJBDK-5AUtocllM"
+const data = { id: 1 }
+
 
 describe('Login tests', () => {
   describe('Case the user inputs invalid data', () => {
@@ -179,7 +180,9 @@ describe('Login tests', () => {
     describe('if a valid token is provided', () => {
 
       beforeEach(() => {
-        sinon.stub(Users, 'findOne').resolves(user as Users);
+        sinon.stub(Users, 'findByPk').resolves(user as Users);
+        sinon.stub(JWTHelper, 'checkToken').resolves();
+        sinon.stub(JWTHelper, 'getTokenData').resolves(data);
       })
 
       afterEach(() => {
@@ -188,14 +191,14 @@ describe('Login tests', () => {
 
       it ('should return status 200', async () => {
         const response = await chai.request(app)
-          .get('/login/validate').set('authorization', validToken);
+          .get('/login/validate').set('authorization', 'validToken');
 
         expect(response.status).to.be.equal(200);
       })
 
       it ('should return the user role inside an object', async () => {
         const response = await chai.request(app)
-        .get('/login/validate').set('authorization', validToken);
+        .get('/login/validate').set('authorization', 'validToken');
 
         expect(response.body).to.be.an('object');
         expect(response.body).to.have.property('role');
@@ -205,7 +208,9 @@ describe('Login tests', () => {
     describe('if a valid token is provided but the user is not found', () => {
 
       beforeEach(() => {
-        sinon.stub(Users, 'findOne').resolves();
+        sinon.stub(Users, 'findByPk').resolves();
+        sinon.stub(JWTHelper, 'checkToken').resolves();
+        sinon.stub(JWTHelper, 'getTokenData').resolves(data);
       })
 
       afterEach(() => {
@@ -214,7 +219,7 @@ describe('Login tests', () => {
 
       it ('should return status 400 with a message', async () => {
         const response = await chai.request(app)
-          .get('/login/validate').set('authorization', validToken);
+          .get('/login/validate').set('authorization', 'validToken');
 
         expect(response.status).to.be.equal(400);
         expect(response.body).to.have.property('message');
