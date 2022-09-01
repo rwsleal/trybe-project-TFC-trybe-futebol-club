@@ -5,7 +5,6 @@ import chaiHttp = require('chai-http');
 
 import { app } from '../app';
 
-import { Response } from 'superagent';
 import Matches from '../database/models/Matches';
 import { IMatch } from '../interfaces';
 import { JWTHelper } from '../helpers';
