@@ -8,6 +8,7 @@ import { app } from '../app';
 import { Response } from 'superagent';
 import Matches from '../database/models/Matches';
 import { IMatch } from '../interfaces';
+import { JWTHelper } from '../helpers';
 
 chai.use(chaiHttp);
 
@@ -43,41 +44,41 @@ const matches = [
     }
   },
   {
-		"id": 3,
-		"homeTeam": 4,
-		"homeTeamGoals": 3,
-		"awayTeam": 11,
-		"awayTeamGoals": 0,
-		"inProgress": false,
-		"teamHome": {
-			"teamName": "Corinthians"
-		},
-		"teamAway": {
-			"teamName": "Napoli-SC"
-		}
-	},
+    "id": 3,
+    "homeTeam": 4,
+    "homeTeamGoals": 3,
+    "awayTeam": 11,
+    "awayTeamGoals": 0,
+    "inProgress": false,
+    "teamHome": {
+      "teamName": "Corinthians"
+    },
+    "teamAway": {
+      "teamName": "Napoli-SC"
+    }
+  },
 ]
 
-const inProgressMatches = [ matches[1] ];
-const finishedMatches = [ matches[0], matches[2] ];
+const inProgressMatches = [matches[1]];
+const finishedMatches = [matches[0], matches[2]];
 
 const newMatch = {
-  "homeTeam": 16, 
-  "awayTeam": 8, 
+  "homeTeam": 16,
+  "awayTeam": 8,
   "homeTeamGoals": 2,
   "awayTeamGoals": 2
 }
 
 const sameTeams = {
-  "homeTeam": 2, 
-  "awayTeam": 2, 
+  "homeTeam": 2,
+  "awayTeam": 2,
   "homeTeamGoals": 2,
   "awayTeamGoals": 2
 }
 
 const otherTeams = {
-  "homeTeam": 55, 
-  "awayTeam": 65, 
+  "homeTeam": 55,
+  "awayTeam": 65,
   "homeTeamGoals": 2,
   "awayTeamGoals": 2
 }
@@ -87,9 +88,6 @@ const matchUpdate = {
   "awayTeamGoals": 1
 }
 
-const validToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
-+ ".eyJkYXRhIjp7ImlkIjoxLCJ1c2VybmFtZSI6IkFkbWluIn0sImlhdCI6MTY2MTc5MzA2MCwiZXhwIjoxNjYyMzk3ODYwfQ"
-+ ".WrOX3IaO5hj1ApxGKo6G25EbtJ-EFJBDK-5AUtocllM"
 
 describe('Matches tests', () => {
   describe('Case a GET request is made to /matches', () => {
@@ -97,7 +95,7 @@ describe('Matches tests', () => {
     beforeEach(() => {
       sinon.stub(Matches, 'findAll').resolves(matches as IMatch[]);
     })
-  
+
     afterEach(() => {
       sinon.restore();
     });
@@ -145,7 +143,7 @@ describe('Matches tests', () => {
       sinon.stub(Matches, 'findAll').resolves(inProgressMatches as IMatch[]);
 
       const response = await chai.request(app)
-        .get('/matches').query({ inProgress: 'true'})
+        .get('/matches').query({ inProgress: 'true' })
 
       expect(response.body).to.be.deep.equal(inProgressMatches)
 
@@ -156,74 +154,89 @@ describe('Matches tests', () => {
       sinon.stub(Matches, 'findAll').resolves(finishedMatches as IMatch[]);
 
       const response = await chai.request(app)
-        .get('/matches').query({ inProgress: 'false'})
+        .get('/matches').query({ inProgress: 'false' })
 
       expect(response.body).to.be.deep.equal(finishedMatches)
 
       sinon.restore();
-    });    
+    });
   })
 
   describe('Case a POST request is made to /matches to save a match with "inProgress=true"', () => {
+    describe('if the user has a valid token', () => {
 
-    beforeEach(() => {
-      sinon.stub(Matches, 'create').resolves({ id:5,...newMatch, inProgress: true} as IMatch);
+      beforeEach(() => {
+        sinon.stub(Matches, 'create').resolves({ id: 5, ...newMatch, inProgress: true } as IMatch);
+        sinon.stub(JWTHelper, 'checkToken').resolves();
+      })
+
+      afterEach(() => {
+        sinon.restore();
+      });
+
+      it('should return status 201', async () => {
+        const response = await chai.request(app)
+          .post('/matches').send(newMatch).set('authorization', 'validToken')
+
+        expect(response.status).to.be.equal(201)
+      });
+
+      it('should return the saved match case the request was successfull', async () => {
+        const response = await chai.request(app)
+          .post('/matches').send(newMatch).set('authorization', 'validToken')
+
+        expect(response.body).to.haveOwnProperty('id')
+        expect(response.body).to.haveOwnProperty('homeTeam')
+        expect(response.body).to.haveOwnProperty('awayTeam')
+        expect(response.body).to.haveOwnProperty('homeTeamGoals')
+        expect(response.body).to.haveOwnProperty('awayTeamGoals')
+        expect(response.body).to.haveOwnProperty('inProgress')
+      });
+
+      it('should not be able to create if the two oposing teams are the same', async () => {
+        const response = await chai.request(app)
+          .post('/matches').send(sameTeams).set('authorization', 'validToken')
+
+        expect(response.status).to.be.equal(401);
+        expect(response.body).to.be.deep.equal({ message: 'It is not possible to create a match with two equal teams' });
+      });
+
+      it('should not be able to create with teams that are not on the database', async () => {
+        const response = await chai.request(app)
+          .post('/matches').send(otherTeams).set('authorization', 'validToken')
+
+        expect(response.status).to.be.equal(404);
+        expect(response.body).to.be.deep.equal({ message: 'There is no team with such id!' });
+      });
     })
-  
-    afterEach(() => {
-      sinon.restore();
-    });
 
-    it('should return status 201', async () => {
-      const response = await chai.request(app)
-        .post('/matches').send(newMatch).set('authorization', validToken)
+    describe('if the user has an invalid token', () => {
 
-      expect(response.status).to.be.equal(201)
-    });
-    
-    it('should return the saved match case the request was successfull', async () => {
-      const response = await chai.request(app)
-        .post('/matches').send(newMatch).set('authorization', validToken)
+      beforeEach(() => {
+        sinon.stub(Matches, 'create').resolves({ id: 5, ...newMatch, inProgress: true } as IMatch);
+      })
 
-      expect(response.body).to.haveOwnProperty('id')
-      expect(response.body).to.haveOwnProperty('homeTeam')
-      expect(response.body).to.haveOwnProperty('awayTeam')
-      expect(response.body).to.haveOwnProperty('homeTeamGoals')
-      expect(response.body).to.haveOwnProperty('awayTeamGoals')
-      expect(response.body).to.haveOwnProperty('inProgress')
-    });
+      afterEach(() => {
+        sinon.restore();
+      });
 
-    it('should not be able to create if the two oposing teams are the same', async () => {
-      const response = await chai.request(app)
-        .post('/matches').send(sameTeams).set('authorization', validToken)
 
-      expect(response.status).to.be.equal(401);
-      expect(response.body).to.be.deep.equal({ message: 'It is not possible to create a match with two equal teams' });
-    });
-    
-    it('should not be able to create with teams that are not on the database', async () => {
-      const response = await chai.request(app)
-        .post('/matches').send(otherTeams).set('authorization', validToken)
+      it('should not be able to create with an invalid token', async () => {
+        const response = await chai.request(app)
+          .post('/matches').send(newMatch).set('authorization', 'invalidToken')
 
-      expect(response.status).to.be.equal(404);
-      expect(response.body).to.be.deep.equal({ message: 'There is no team with such id!' });
-    }); 
+        expect(response.status).to.be.equal(401);
+        expect(response.body).to.be.deep.equal({ message: 'Token must be a valid token' });
+      });
 
-    it('should not be able to create with an invalid token', async () => {
-      const response = await chai.request(app)
-        .post('/matches').send(newMatch).set('authorization', 'invalidToken')
+      it('should not be able to create without a token', async () => {
+        const response = await chai.request(app)
+          .post('/matches').send(newMatch)
 
-      expect(response.status).to.be.equal(401);
-      expect(response.body).to.be.deep.equal({ message: 'Token must be a valid token' });
-    });
-
-    it('should not be able to create without a token', async () => {
-      const response = await chai.request(app)
-        .post('/matches').send(newMatch)
-
-      expect(response.status).to.be.equal(401);
-      expect(response.body).to.be.deep.equal({ message: 'Token not provided' });
-    }); 
+        expect(response.status).to.be.equal(401);
+        expect(response.body).to.be.deep.equal({ message: 'Token not provided' });
+      });
+    })
   })
 
   describe('Case a PATCH request is made to /matches/:id/finish"', () => {
@@ -231,7 +244,7 @@ describe('Matches tests', () => {
     beforeEach(() => {
       sinon.stub(Matches, 'update').resolves()
     })
-  
+
     afterEach(() => {
       sinon.restore();
     });
@@ -242,14 +255,14 @@ describe('Matches tests', () => {
 
       expect(response.status).to.be.equal(200)
     });
-    
+
     it('should return a message', async () => {
       const response = await chai.request(app)
         .patch('/matches/2/finish')
 
       expect(response.body).to.haveOwnProperty('message')
       expect(response.body.message).to.be.deep.equal('Finished')
-    }); 
+    });
   })
 
   describe('Case a PATCH request is made to /matches/:id"', () => {
@@ -257,7 +270,7 @@ describe('Matches tests', () => {
     beforeEach(() => {
       sinon.stub(Matches, 'update').resolves()
     })
-  
+
     afterEach(() => {
       sinon.restore();
     });
@@ -268,13 +281,13 @@ describe('Matches tests', () => {
 
       expect(response.status).to.be.equal(200)
     });
-    
+
     it('should return a message', async () => {
       const response = await chai.request(app)
         .patch('/matches/2/').send(matchUpdate)
 
       expect(response.body).to.haveOwnProperty('message')
       expect(response.body.message).to.be.deep.equal('Match updated')
-    }); 
+    });
   })
 })
