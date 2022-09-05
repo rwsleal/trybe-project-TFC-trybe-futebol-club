@@ -14,7 +14,7 @@ A publicação deste código está de acordo com o Código de Ética e Conduta e
 
   Neste projeto, fui responsável por desenvolver uma API (utilizando o método `TDD`) e também integrar *- através do docker-compose -* as aplicações para que elas funcionem consumindo um banco de dados.
 
-  Procurei explorar e aplicar o máximo de conhecimentos adiquiridos durante minha jornada e portanto me desafiei a desenvolver o projeto todo em POO (Programação Orientada a Objetos) aplicando os conceitos SOLID. Deu trabalho, mas o resultado valeu a pena!
+  Procurei explorar e aplicar o máximo de conhecimentos adquiridos durante minha jornada e portanto me desafiei a desenvolver o projeto todo em POO (Programação Orientada a Objetos) aplicando os conceitos SOLID. Deu trabalho, mas o resultado valeu a pena!
 
   Além disso, esta foi minha primeira experiência desenvolvendo testes E2E! :)
 
